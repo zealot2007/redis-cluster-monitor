@@ -21,6 +21,8 @@ discusses the origins of this project a bit.
 
 You must have already installed the Redis Python client.
 
+A cluster of Redis instances :)
+
 ## Usage
 
 1. Configure your redis cluster with one master and 0 or more slaves.
@@ -104,6 +106,20 @@ Kill the master on port 6379.  Watch the monitor's output:
 Please let me know if you find any issues. 
 
 There's likely to be some corner cases as I just started this project.
+
+## Hang on a second!
+
+Right, you might be wondering how this is useful since you still have a single
+write-master and N read-slaves in a cluster but most if not all Redis client
+libraries require a single host:port to connect to. If the master goes down in
+the cluster another will be brought up but your client will have no idea that
+this happened.
+
+Exactly.
+
+So, this isn't useful *yet* in practice. You need a smarter client library that
+is "cluster-aware". I'll be patching the Python Redis client to this end soon.
+The long term goal is a redis-cluster project where all these smarts will live.
 
 ## License
 
