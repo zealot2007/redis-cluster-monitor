@@ -11,8 +11,8 @@ around a new master.
 I created a Python script that does this instead. It only took an hour to do so
 no big loss. OK, I didn't think of using redis-cli initially :)
 
-Perhaps this could at least form the general concept that will going into the
-forthcoming "redis-cluster" project.
+Perhaps this project could at least be a part of the infrastructure (perhaps in
+concept only) for the forthcoming "redis-cluster" project.
 
 The [original mailing list thread](http://groups.google.com/group/redis-db/browse_thread/thread/497ee813c9960a50)
 discusses the origins of this project a bit.
