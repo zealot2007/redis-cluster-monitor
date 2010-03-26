@@ -1,5 +1,13 @@
 # redis-cluster-monitor
 
+---
+
+UPDATE: please note that this is just a toy. A proper "redis-cluster" is on the
+official Redis roadmap.  There's also the [twine
+project](http://github.com/alexgenaud/twine) to consider.
+
+---
+
 Redis supports master-slave (1:N) replication but does not support *automatic*
 failover. That is, if the master "goes down" for any reason, your sysadmin
 (read: you) has to reconfigure one of the Redis slaves to be the new master.
