@@ -28,7 +28,7 @@ LOG_LEVEL = logging.INFO
 
 ## End of configuration.
 
-import redis, socket, re, sys, random, time, logging.handlers
+import redis, socket, re, sys, random, time, logging.handlers, os
 
 logger = logging.getLogger(LOGGER_NAME)
 logger.setLevel(LOG_LEVEL)
@@ -127,7 +127,7 @@ class RedisInstance(object):
     if master:
       logger.info("commiting SLAVE status for %s as slave of %s" % (self, str(master)))
       r._write('SLAVEOF %s %d\r\n' % (master.host, master.port))
-    else:
+     else:
       logger.info("commiting MASTER status for %s" % self)
       r._write('SLAVEOF NO ONE\r\n')  # I am Spartacus!
     response = r.get_response()
@@ -180,17 +180,22 @@ class RedisClusterMonitor(object):
     
   def check(self):
     "Run one iteration of checking all hosts and reconfigure them as needed."
-    
+
+    #modified by chenlei. update the sequence of code execute
     self.cluster._validate()
     
     logging.info("checking cluster...")
-        
+
+    current_master = self.cluster.get_master()
+    
     for instance in self.cluster.instances:
       instance.ping()
+      if not (instance.is_master() or instance.is_slave()) and instance.is_up():
+        instance.make_slave_of(current_master)
         
     # is the master offline?
     
-    current_master = self.cluster.get_master()
+    #current_master = self.cluster.get_master() #move this line before for statement above
     if current_master.is_down():
       new_master = self._pick_new_master()
       logger.info("master is offline; picked new master to be %s" % str(new_master))
@@ -218,7 +223,7 @@ class RedisClusterMonitor(object):
     if current_master.is_up():
       logger.info("making current master %s a slave of %s" % (str(current_master), str(new_master)))
       current_master.make_slave_of(new_master)
-      
+        
     for existing_slave in self.cluster.get_slaves():
       logger.info("making existing slave %s a slave of %s" % (str(existing_slave), str(new_master)))
       existing_slave.make_slave_of(new_master)
@@ -263,3 +268,4 @@ if __name__ == '__main__':
   cluster = autoconfigure_cluster_from(host_specs)
   monitor = RedisClusterMonitor(cluster)
   monitor.check_forevermore()
+
